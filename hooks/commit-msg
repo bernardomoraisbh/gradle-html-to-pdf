@@ -1,0 +1,17 @@
+#!/bin/bash
+# Hook para verificar o tamanho da mensagem de commit.
+
+# Lê a mensagem de commit do arquivo fornecido como argumento.
+COMMIT_MSG_FILE="$1"
+COMMIT_MSG=$(cat $COMMIT_MSG_FILE)
+
+# Define o tamanho mínimo da mensagem.
+MIN_LENGTH=20
+
+# Verifica se o tamanho da mensagem é menor que o mínimo.
+if [ ${#COMMIT_MSG} -lt $MIN_LENGTH ]; then
+    echo "Erro: Sua mensagem de commit deve ter pelo menos $MIN_LENGTH caracteres."
+    exit 1
+fi
+
+exit 0

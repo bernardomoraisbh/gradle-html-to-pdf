@@ -1,0 +1,32 @@
+#!/bin/bash
+echo "*********************************************************"
+echo "Running git pre-push hook. Running Gradlew Build... "
+echo "*********************************************************"
+
+# Gather the staged files - to make sure changes are saved only for these files.
+stagedFiles=$(git diff --staged --name-only)
+
+# run spotless apply
+./gradlew build
+
+status=$?
+
+if [ "$status" = 0 ] ; then
+    echo "Static analysis found no problems."
+    # Add staged file changes to git
+    for file in $stagedFiles; do
+      if test -f "$file"; then
+        git add $file
+      fi
+    done
+    #Exit
+    exit 0
+else
+    echo "*********************************************************"
+    echo 1>&2 "Gradlew Check found violations."
+    echo 1>&2 "Run spotless apply in your terminal or gradlew check --info"
+	echo 1>&2 "and fix the issues before trying to push again."
+    echo "*********************************************************"
+    #Exit
+    exit 1
+fi

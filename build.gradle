@@ -1,0 +1,118 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot'
+	id 'io.spring.dependency-management'
+	id 'org.sonarqube'
+	id 'com.diffplug.spotless'
+	id 'eclipse'
+}
+
+group = 'html.to.pdf'
+version = '1.0.0'
+
+bootJar {
+	enabled = false
+}
+
+jar {
+	enabled = true
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation group: 'org.sonarsource', name: 'sonar-persistit', version: '3.3.2'
+	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+	implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+	implementation group: 'org.apache.commons', name: 'commons-text', version: '1.12.0'
+	implementation 'com.ibm.icu:icu4j:76.1'
+
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	implementation 'org.apache.poi:poi:5.2.3'
+	implementation 'org.apache.poi:poi-ooxml:5.3.0'
+	implementation 'com.google.guava:guava:33.2.1-jre'
+	implementation 'org.xhtmlrenderer:flying-saucer-pdf:9.9.2'
+	implementation 'org.jsoup:jsoup:1.18.1'
+	implementation("org.apache.xmlgraphics:batik-all:1.17") {
+		exclude group: "xml-apis", module: "xml-apis"
+		exclude group: "xml-apis", module: "xml-apis-ext"
+	}
+
+	implementation 'org.apache.pdfbox:pdfbox:3.0.3'
+}
+
+tasks.withType(JavaExec) {
+	doFirst {
+		dotenv {
+				filename = '.env'
+		}
+	}
+}
+
+spotless {
+	java {
+		importOrder()
+		removeUnusedImports()
+		cleanthat()
+		eclipse('4.32').configFile('sonar-formatter.xml')
+		formatAnnotations()
+		trimTrailingWhitespace()
+		endWithNewline()
+		custom 'Remove commented-out import statements', {
+				it.replaceAll(/\n\/\/ import .*?;.*/, '')
+		}
+		custom 'Remove any empty Javadocs and block comments', {
+				it.replaceAll(/\/\*+\s*\n(\s*\*\s*\n)*\s*\*+\/\s*\n/, '')
+		}
+		target('src/*/java/**/*.java') {
+				encoding 'UTF-8'
+		}
+		encoding 'UTF-8'
+	}
+	format 'xml', {
+		target 'src/**/*.xml'
+		indentWithSpaces()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+task addGitHooks(type: Copy) {
+	description = "Adicionar Hooks do Git na pasta ./.git/hooks"
+	doFirst {
+		println("...Running Add Git Hooks...")
+	}
+	from project.file('hooks')
+	into project.file('.git/hooks')
+	doLast {
+		println("- Added Git Hooks.")
+	}
+}
+
+tasks.build.dependsOn(addGitHooks)
+
+eclipse {
+	synchronizationTasks addGitHooks
+}
