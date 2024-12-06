@@ -1,0 +1,14 @@
+POST http://localhost:8080/html/to-xhtml HTTP/1.1
+content-type: application/text
+
+<!DOCTYPE html>
+<html>
+</html>
+
+###
+
+POST http://localhost:8080/html/to-pdf HTTP/1.1
+content-type: application/text
+
+<html>
+</html>
