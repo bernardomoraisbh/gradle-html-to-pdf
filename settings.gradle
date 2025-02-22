@@ -9,3 +9,6 @@ pluginManagement {
 }
 
 rootProject.name = 'gradle-html-to-pdf'
+
+include 'lib-gerador-documentos'
+project(':lib-gerador-documentos').projectDir = file("../lib-gerador-documentos")

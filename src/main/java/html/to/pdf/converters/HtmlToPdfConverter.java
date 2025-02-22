@@ -9,8 +9,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 public class HtmlToPdfConverter {
 
     public static byte[] htmlToPdf(String html) throws IOException {
-        String doctype = "<!DOCTYPE html>";
-        html = doctype + "<html>" + html + "</html>";
+        html = "<html>" + html + "</html>";
 
         Document document = Jsoup.parse(html);
         document.outputSettings().syntax(Document.OutputSettings.Syntax.xml); // Force XHTML compliance

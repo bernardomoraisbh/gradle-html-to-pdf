@@ -35,6 +35,7 @@ repositories {
 }
 
 dependencies {
+	implementation project(':lib-gerador-documentos')
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation group: 'org.sonarsource', name: 'sonar-persistit', version: '3.3.2'
 	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
